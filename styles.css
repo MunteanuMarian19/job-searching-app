@@ -1,0 +1,162 @@
+:root {
+  --color0: #ccffff; /* Light blue: for body and container */
+  --blue2: #669acc; /* For job cards background */
+  --blue3: #336799; /* For modals background */
+  --blue4: #003466; /* For action buttons (default) */
+  --color2: #80b3ff; /* New hover color for action buttons */
+}
+
+/* Global Reset */
+* {
+  box-sizing: border-box;
+}
+
+/* Body */
+body {
+  font-family: Arial, sans-serif;
+  background-color: var(--color0);
+  margin: 0;
+  padding: 0;
+}
+
+/* Main Container (results, etc.) */
+.container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: var(--color0);
+}
+
+/* Jobs Row Column Wrappers */
+#jobs-row > div {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: var(--color0);
+}
+
+/* Job Cards */
+.card {
+  background-color: var(--blue2);
+  border: none;
+  border-radius: 10px;
+  color: #000;
+}
+
+.card .card-title,
+.card .card-text {
+  color: #000;
+}
+
+/* Modals */
+.modal-content {
+  background-color: var(--blue3);
+  color: #fff;
+}
+
+.modal-header,
+.modal-body {
+  background-color: var(--blue3);
+}
+
+/* Error Modal */
+#errorModal .modal-content {
+  background-color: var(--blue4);
+  color: #fff;
+}
+
+/* Dropdown Menus */
+.dropdown-menu {
+  background-color: var(--blue2);
+  color: #fff;
+}
+
+.dropdown-menu li {
+  text-align: center;
+}
+
+/* Ensure dropdown toggles in modals are full width and centered */
+.modal .btn.dropdown-toggle,
+.modal .dropdown-menu {
+  width: 100% !important;
+  text-align: center;
+}
+
+/* --- Action Buttons Styling --- */
+/* Both the Description button and the Apply Options dropdown toggle use var(--blue4) by default */
+.description-btn,
+.btn.dropdown-toggle {
+  background-color: var(--blue4) !important;
+  color: #fff !important;
+  width: 100%;
+  border: none;
+}
+
+/* On hover, they change to var(--color2) */
+.description-btn:hover,
+.btn.dropdown-toggle:hover {
+  background-color: var(--color2) !important;
+  color: #fff !important;
+}
+
+/* --- Dropdown Ordered List Styling --- */
+.dropdown-menu ol {
+  width: 100%;
+  padding: 0.5rem;
+  margin: 0;
+  list-style-type: decimal;
+}
+
+.dropdown-menu ol li a {
+  text-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: break-word !important;
+  max-width: 100%;
+}
+
+/* Ensure dropdown menu items wrap text properly */
+.dropdown-menu ol {
+  width: 100%;
+  padding: 0.5rem;
+  margin: 0;
+  list-style-type: decimal;
+  word-wrap: break-word; /* Ensures long words break */
+  overflow-wrap: break-word; /* Alternative for compatibility */
+  white-space: break-word !important;
+}
+
+/* Ensure individual links inside apply options do not overflow */
+.dropdown-menu ol li {
+  text-align: center;
+  padding: 5px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: break-word !important;
+  max-width: 100%;
+}
+
+/* Ensure anchor tags inside dropdown items wrap properly */
+.dropdown-menu ol li a {
+  display: block;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: break-word !important;
+  max-width: 100%;
+}
+
+/* --- Card Body Spacing --- */
+/* Use flex layout for consistent vertical spacing */
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 20px;
+}
+
+.card-body button {
+  padding: 5px;
+}
+
+.dropdown-item {
+  white-space: normal !important;
+}
