@@ -58,8 +58,12 @@ document
     );
     currentPage = 1;
     const searchModalInstance = startSearchingAnimation();
-    await searchJobs(query, datePosted);
-    stopSearchingAnimation(searchModalInstance);
+    try {
+      await searchJobs(query, datePosted);
+    } finally {
+      // This ensures the searching modal is closed regardless of success or error.
+      stopSearchingAnimation(searchModalInstance);
+    }
   });
 
 // Fetch jobs from API (one call)
