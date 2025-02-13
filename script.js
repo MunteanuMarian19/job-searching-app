@@ -4,6 +4,14 @@ let currentPage = 1;
 const PAGE_SIZE = 10;
 let searchInterval = null;
 
+// Helper function to clear previous results
+function clearResults() {
+  document.getElementById("results-summary").innerHTML = "";
+  document.getElementById("pagination-top").innerHTML = "";
+  document.getElementById("pagination-bottom").innerHTML = "";
+  document.getElementById("jobs-row").innerHTML = "";
+}
+
 // Function to start the searching animation modal
 function startSearchingAnimation() {
   const searchModalEl = document.getElementById("searchModal");
@@ -110,11 +118,12 @@ async function searchJobs(
     console.error("Error fetching jobs:", error);
     if (error.response && error.response.status === 429) {
       showErrorModal(
-        "API limit reached. You have exceeded your API request quota. Please try again next month."
+        "API limit reached. You have exceeded your API request quota. Please try again in a couple of days."
       );
     } else {
       showErrorModal("Error fetching jobs. Please try again later.");
     }
+    clearResults(); // Clear previous results on error
     document.getElementById("jobs-row").innerHTML =
       "<p>Error fetching jobs. Please try again later.</p>";
   }
