@@ -38,7 +38,7 @@ function showResultsSections() {
   document.getElementById("results-summary").style.display = "block";
   document.getElementById("pagination-top").style.display = "block";
   document.getElementById("pagination-bottom").style.display = "block";
-  // Since jobs are rendered in a Bootstrap row, change its display to block (the row's flex is provided by Bootstrap)
+  // Since jobs are rendered in a Bootstrap row, change its display to flex (as set by Bootstrap)
   document.getElementById("jobs-row").style.display = "flex";
 }
 
@@ -54,6 +54,9 @@ document
   .getElementById("job-search-form")
   .addEventListener("submit", async function (e) {
     e.preventDefault();
+    // Clear previous results immediately when a new search begins
+    clearResults();
+
     const jobTitle = document.getElementById("job_title").value;
     const city = document.getElementById("city").value;
     const datePosted = document.getElementById("date_posted").value;
@@ -69,12 +72,12 @@ document
     try {
       await searchJobs(query, datePosted);
     } finally {
-      // This ensures the searching modal is closed regardless of success or error.
+      // Ensure the searching modal is closed regardless of success or error.
       stopSearchingAnimation(searchModalInstance);
     }
   });
 
-// Fetch jobs from API (one call)
+// Fetch jobs from API (one call) using your hardcoded API key
 async function searchJobs(
   query,
   datePosted,
@@ -101,12 +104,15 @@ async function searchJobs(
     console.log("Total jobs fetched:", allJobs.length);
 
     if (allJobs.length === 0) {
+      // Clear any previously displayed data and show the error modal
+      clearResults();
       showErrorModal(
         "No jobs found for the selected criteria. Please adjust your search and try again."
       );
       return;
     }
 
+    // Sort jobs by timestamp (newest first)
     allJobs.sort(
       (a, b) =>
         (b.job_posted_at_timestamp || 0) - (a.job_posted_at_timestamp || 0)
@@ -142,8 +148,7 @@ function renderPage() {
     console.log("Rendering job:", job);
 
     // Build the Description button.
-    // (It stores the full description and apply options as data attributes.)
-    const descButtonHTML = `<button class="btn btn-info description-btn" data-full-desc="${encodeURIComponent(
+    const descButtonHTML = `<button class="btn btn-info description-btn w-100" data-full-desc="${encodeURIComponent(
       job.job_description || ""
     )}" data-apply-options='${JSON.stringify(
       job.apply_options || []
@@ -157,7 +162,7 @@ function renderPage() {
       job.apply_options.length > 0
     ) {
       // Using an ordered list (<ol>) for numbering
-      applyOptionsHTML = `<ol class="dropdown-menu">`;
+      applyOptionsHTML = `<ol class="dropdown-menu w-100">`;
       job.apply_options.forEach((option) => {
         if (option && option.publisher && option.apply_link) {
           applyOptionsHTML += `<li><a class="dropdown-item" href="${option.apply_link}" target="_blank">${option.publisher}</a></li>`;
@@ -165,78 +170,71 @@ function renderPage() {
       });
       applyOptionsHTML += `</ol>`;
     } else {
-      applyOptionsHTML = `<p class="dropdown-item">No Apply Options</p>`;
+      applyOptionsHTML = `<li><span class="dropdown-item">No Options</span></li>`;
     }
 
     const jobCard = `
-  <div class="card h-100">
-    <div class="card-body d-flex flex-column gap-2">
-      <h5 class="card-title">${job.job_title || "No Title"}</h5>
-      ${
-        job.employer_name
-          ? `<p class="card-text"><strong>Employer:</strong> ${job.employer_name}</p>`
-          : ""
-      }
-      ${
-        job.job_employment_type
-          ? `<p class="card-text"><strong>Employment Type:</strong> ${job.job_employment_type}</p>`
-          : ""
-      }
-      ${
-        job.job_location
-          ? `<p class="card-text"><strong>Location:</strong> ${job.job_location}</p>`
-          : job.job_city || job.job_country
-          ? `<p class="card-text"><strong>Location:</strong> ${
-              job.job_city || ""
-            } ${job.job_country || ""}</p>`
-          : ""
-      }
-      ${
-        job.job_posted_at
-          ? `<p class="card-text"><strong>Posted at:</strong> ${job.job_posted_at}</p>`
-          : ""
-      }
-      
-      <!-- Push buttons to the bottom -->
-      <div class="mt-auto">
-        <!-- Description button, full width -->
-        <button 
-          class="btn btn-info description-btn w-100" 
-          data-full-desc="${encodeURIComponent(job.job_description || "")}"
-          data-apply-options='${JSON.stringify(job.apply_options || [])}'
-        >
-          Description
-        </button>
-        <!-- Apply Options dropdown, full width -->
-        <div class="dropdown mt-2">
-          <button 
-            class="btn btn-primary dropdown-toggle w-100" 
-            type="button" 
-            id="applyDropdown${i}" 
-            data-bs-toggle="dropdown" 
-            aria-expanded="false">
-            Apply Options
-          </button>
-          <ol class="dropdown-menu w-100" aria-labelledby="applyDropdown${i}">
-            ${
-              job.apply_options &&
-              Array.isArray(job.apply_options) &&
-              job.apply_options.length > 0
-                ? job.apply_options
-                    .map((option) => {
-                      if (option && option.publisher && option.apply_link)
-                        return `<li><a class="dropdown-item" href="${option.apply_link}" target="_blank">${option.publisher}</a></li>`;
-                      else return "";
-                    })
-                    .join("")
-                : `<li><span class="dropdown-item">No Options</span></li>`
-            }
-          </ol>
+      <div class="card h-100">
+        <div class="card-body d-flex flex-column gap-2">
+          <h5 class="card-title">${job.job_title || "No Title"}</h5>
+          ${
+            job.employer_name
+              ? `<p class="card-text"><strong>Employer:</strong> ${job.employer_name}</p>`
+              : ""
+          }
+          ${
+            job.job_employment_type
+              ? `<p class="card-text"><strong>Employment Type:</strong> ${job.job_employment_type}</p>`
+              : ""
+          }
+          ${
+            job.job_location
+              ? `<p class="card-text"><strong>Location:</strong> ${job.job_location}</p>`
+              : job.job_city || job.job_country
+              ? `<p class="card-text"><strong>Location:</strong> ${
+                  job.job_city || ""
+                } ${job.job_country || ""}</p>`
+              : ""
+          }
+          ${
+            job.job_posted_at
+              ? `<p class="card-text"><strong>Posted at:</strong> ${job.job_posted_at}</p>`
+              : ""
+          }
+          
+          <!-- Push buttons to the bottom -->
+          <div class="mt-auto">
+            <!-- Description button, full width -->
+            <button class="btn btn-info description-btn w-100" data-full-desc="${encodeURIComponent(
+              job.job_description || ""
+            )}" data-apply-options='${JSON.stringify(job.apply_options || [])}'>
+              Description
+            </button>
+            <!-- Apply Options dropdown, full width -->
+            <div class="dropdown mt-2">
+              <button class="btn btn-primary dropdown-toggle w-100" type="button" id="applyDropdown${i}" data-bs-toggle="dropdown" aria-expanded="false">
+                Apply Options
+              </button>
+              <ol class="dropdown-menu w-100" aria-labelledby="applyDropdown${i}">
+                ${
+                  job.apply_options &&
+                  Array.isArray(job.apply_options) &&
+                  job.apply_options.length > 0
+                    ? job.apply_options
+                        .map((option) => {
+                          if (option && option.publisher && option.apply_link)
+                            return `<li><a class="dropdown-item" href="${option.apply_link}" target="_blank">${option.publisher}</a></li>`;
+                          else return "";
+                        })
+                        .join("")
+                    : `<li><span class="dropdown-item">No Options</span></li>`
+                }
+              </ol>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-`;
+    `;
 
     // Wrap the job card in a Bootstrap grid column.
     const colDiv = document.createElement("div");
@@ -253,7 +251,6 @@ function renderPage() {
       // Format full description: add line breaks after punctuation and bullet points.
       fullDesc = fullDesc.replace(/([.?!])\s+/g, "$1<br><br>");
       fullDesc = fullDesc.replace(/•\s*/g, "<br>• ");
-      // Retrieve apply options from the data attribute (as JSON)
       let applyOptions = [];
       try {
         applyOptions = JSON.parse(this.getAttribute("data-apply-options"));
@@ -262,7 +259,7 @@ function renderPage() {
       }
       let applyDropdownHtml = "";
       if (applyOptions.length > 0) {
-        applyDropdownHtml = `<ol class="dropdown-menu">`;
+        applyDropdownHtml = `<ol class="dropdown-menu w-100">`;
         applyOptions.forEach((option) => {
           if (option && option.publisher && option.apply_link) {
             applyDropdownHtml += `<li><a class="dropdown-item" href="${option.apply_link}" target="_blank">${option.publisher}</a></li>`;
@@ -270,30 +267,20 @@ function renderPage() {
         });
         applyDropdownHtml += `</ol>`;
       } else {
-        applyDropdownHtml = `<p>No Apply Options</p>`;
+        applyDropdownHtml = `<li><span class="dropdown-item">No Options</span></li>`;
       }
 
       document.getElementById("modal-description-body").innerHTML = `
-  ${fullDesc}<br><br>
-  <div class="dropdown">
-    <button class="btn btn-primary dropdown-toggle w-100 text-center" type="button" id="modalApplyDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-      Apply Options
-    </button>
-    <ol class="dropdown-menu w-100 text-center" aria-labelledby="modalApplyDropdown">
-      ${
-        applyOptions.length > 0
-          ? applyOptions
-              .map((option) => {
-                if (option && option.publisher && option.apply_link)
-                  return `<li><a class="dropdown-item" href="${option.apply_link}" target="_blank">${option.publisher}</a></li>`;
-                else return "";
-              })
-              .join("")
-          : `<li><span class="dropdown-item">No Apply Options</span></li>`
-      }
-    </ol>
-  </div>
-`;
+        ${fullDesc}<br><br>
+        <div class="dropdown">
+          <button class="btn btn-primary dropdown-toggle w-100 text-center" type="button" id="modalApplyDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            Apply Options
+          </button>
+          <ol class="dropdown-menu w-100 text-center" aria-labelledby="modalApplyDropdown">
+            ${applyDropdownHtml}
+          </ol>
+        </div>
+      `;
 
       const modal = new bootstrap.Modal(
         document.getElementById("descriptionModal")
