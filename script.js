@@ -102,6 +102,8 @@ async function searchJobs(
     console.log("Total jobs fetched:", allJobs.length);
 
     if (allJobs.length === 0) {
+      // Clear any previously displayed data and show the error modal
+      clearResults();
       showErrorModal(
         "No jobs found for the selected criteria. Please adjust your search and try again."
       );
