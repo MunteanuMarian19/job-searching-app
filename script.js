@@ -4,6 +4,14 @@ let currentPage = 1;
 const PAGE_SIZE = 10;
 let searchInterval = null;
 
+// Helper function to clear previous results
+function clearResults() {
+  document.getElementById("results-summary").innerHTML = "";
+  document.getElementById("pagination-top").innerHTML = "";
+  document.getElementById("pagination-bottom").innerHTML = "";
+  document.getElementById("jobs-row").innerHTML = "";
+}
+
 // Function to start the searching animation modal
 function startSearchingAnimation() {
   const searchModalEl = document.getElementById("searchModal");
@@ -46,6 +54,7 @@ document
   .getElementById("job-search-form")
   .addEventListener("submit", async function (e) {
     e.preventDefault();
+    clearResults();
     const jobTitle = document.getElementById("job_title").value;
     const city = document.getElementById("city").value;
     const datePosted = document.getElementById("date_posted").value;
